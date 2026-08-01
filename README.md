@@ -1,6 +1,8 @@
 # PowerChat
 
-PowerChat is a professional native Windows chat shell built with WinForms and Microsoft WebView2. It combines a modern Chromium-rendered chat interface with direct WinForms access to the Windows file system, native window management, and a local file-based AI bridge.
+PowerChat is a queue-management layer for your existing AI coding harness. Instead of waiting for each LLM response before typing the next prompt, you can write and queue prompts while the model is still working.
+
+It is built for terminal-window and multiplexer fatigue. Use it alongside Claude Code, Codex, OpenCode, PI Agent, or any other local harness. PowerChat is a native Windows shell built with WinForms and Microsoft WebView2.
 
 ## Guidebooks
 
