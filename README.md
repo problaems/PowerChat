@@ -2,7 +2,9 @@
 
 PowerChat is a queue-management layer for your existing AI coding harness. Instead of waiting for each LLM response before typing the next prompt, you can write and queue prompts while the model is still working.
 
-It is built for terminal-window and multiplexer fatigue. Use it alongside Claude Code, Codex, OpenCode, PI Agent, or any other local harness. PowerChat is a native Windows shell built with WinForms and Microsoft WebView2.
+It is built for terminal-window and multiplexer fatigue. Use it alongside Claude Code, Codex, OpenCode, PI Agent, or any other local harness. Take advantage of prompt caching! Your agents don't stop. They keep working until all your tasks are complete. PowerChat is a native Windows shell built with WinForms and Microsoft WebView2.
+
+![PowerChat interface](Capture.PNG)
 
 ## Guidebooks
 
