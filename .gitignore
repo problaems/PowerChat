@@ -1,0 +1,40 @@
+## .NET / build
+bin/
+obj/
+[Bb]uild/
+[Dd]ebug/
+[Rr]elease/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.pdb
+*.dll
+*.exe
+!wwwroot/
+*.cache
+*.log
+
+## NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## IDE / OS
+.vs/
+.idea/
+*.swp
+*~
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+## Local app / agent bridge runtime data
+bridge/*.json
+bridge/processed/
+bridge/*.txt
+.draft-test/
+.build-check/

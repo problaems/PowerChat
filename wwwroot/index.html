@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>PowerChat</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <div class="app-frame">
+    <header class="titlebar">
+      <div class="drag-region" id="dragRegion">
+        <div class="app-mark" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="window-title">POWERCHAT <b>// LOCAL</b></div>
+        <div class="title-status"><i></i><span id="titleStatus">BOOTING</span></div>
+      </div>
+      <div class="window-controls">
+        <button id="minimizeButton" class="window-button" aria-label="Minimize" title="Minimize">
+          <svg viewBox="0 0 12 12"><path d="M2 8.5h8"/></svg>
+        </button>
+        <button id="maximizeButton" class="window-button" aria-label="Maximize" title="Maximize">
+          <svg class="maximize-icon" viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7"/></svg>
+          <svg class="restore-icon" viewBox="0 0 12 12"><path d="M4 3h5v5M3 4h5v5H3z"/></svg>
+        </button>
+        <button id="closeButton" class="window-button close" aria-label="Close" title="Close">
+          <svg viewBox="0 0 12 12"><path d="M2.5 2.5l7 7m0-7l-7 7"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="sidebar">
+        <section class="brand-block">
+          <div class="eyebrow">LOCAL CONVERSATION NODE</div>
+          <h1>Operator<br><span>Console</span></h1>
+          <p>Native WebView2 shell. Disk-first messages. Markdown-aware output.</p>
+        </section>
+
+        <button class="primary-action" id="focusComposerButton">
+          <span class="plus">+</span>
+          <span><b>New prompt</b><small>Focus composer</small></span>
+          <kbd>Ctrl L</kbd>
+        </button>
+
+        <section class="panel session-panel">
+          <div class="panel-title"><span>SESSION</span><span class="live-dot">LIVE</span></div>
+          <dl>
+            <div><dt>ID</dt><dd id="sessionId">pending</dd></div>
+            <div><dt>STORE</dt><dd>JSONL + ASSETS</dd></div>
+            <div><dt>MODE</dt><dd>LOCAL / BRIDGED</dd></div>
+          </dl>
+          <div class="path-field" id="pathField" title="Click to copy">
+            <span id="folderPath">Resolving AppData path…</span>
+            <svg viewBox="0 0 20 20"><path d="M7 6V4.8C7 3.8 7.8 3 8.8 3h6.4C16.2 3 17 3.8 17 4.8v6.4c0 1-.8 1.8-1.8 1.8H14M4.8 7h6.4c1 0 1.8.8 1.8 1.8v6.4c0 1-.8 1.8-1.8 1.8H4.8c-1 0-1.8-.8-1.8-1.8V8.8C3 7.8 3.8 7 4.8 7z"/></svg>
+          </div>
+          <button class="secondary-action" id="openFolderButton">Open chat folder <span>↗</span></button>
+        </section>
+
+        <section class="panel work-panel">
+          <div class="panel-title"><span>CURRENT WORK</span><span id="activeTaskState">IDLE</span></div>
+          <div class="work-detail" id="workDetail">AI is not connected.</div>
+        </section>
+
+        <section class="panel task-panel">
+          <div class="panel-title"><span>TASK QUEUE</span><span id="taskQueueCount">0</span></div>
+          <div class="task-queue" id="taskQueue">
+            <div class="task-queue-empty">No queued tasks</div>
+          </div>
+        </section>
+
+        <section class="panel shortcut-panel">
+          <div class="panel-title"><span>KEYMAP</span><span>V2</span></div>
+          <div class="shortcut"><span>Send</span><div><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>Enter</kbd></div></div>
+          <div class="shortcut"><span>Attach image</span><div><kbd>Ctrl</kbd><kbd>U</kbd></div></div>
+          <div class="shortcut"><span>Focus input</span><div><kbd>Ctrl</kbd><kbd>L</kbd></div></div>
+          <div class="shortcut"><span>Clear files</span><div><kbd>Esc</kbd></div></div>
+        </section>
+
+        <div class="sidebar-footer">
+          <span><i></i> BRIDGE ARMED</span>
+          <span id="clock">--:--:--</span>
+        </div>
+      </aside>
+
+      <main class="main-column">
+        <div class="main-toolbar">
+          <div>
+            <div class="toolbar-title">Untitled local thread</div>
+            <div class="toolbar-subtitle"><span id="messageCount">0 messages</span><i></i><span>Markdown renderer active</span></div>
+          </div>
+          <div class="toolbar-actions">
+            <button class="view-mode-action" id="viewModeButton" title="Cycle conversation visibility">VIEW: FULL</button>
+            <div class="timeout-pill" id="connectionTimer" title="AI inactivity timeout. Sending a message resets this to 60:00.">--:--</div>
+            <button class="export-action" id="exportButton" title="Export selected chat messages">EXPORT</button>
+            <button class="icon-action" id="scrollBottomButton" title="Jump to latest">
+              <svg viewBox="0 0 24 24"><path d="M12 4v14m-6-6l6 6 6-6"/></svg>
+            </button>
+            <div class="connection-pill"><i></i><span id="connectionState">INITIALIZING</span></div>
+          </div>
+        </div>
+
+        <section class="chat-scroll" id="chatScroll">
+          <div class="empty-state" id="emptyState">
+            <div class="empty-grid"></div>
+            <div class="terminal-icon"><span>&gt;_</span></div>
+            <div class="eyebrow">READY FOR INPUT</div>
+            <h2>Build the thread.</h2>
+            <p>Send text, screenshots, or both. Every turn is serialized to your local AppData session folder.</p>
+            <div class="capability-row">
+              <span># markdown</span><span>▧ images</span><span>⌁ local bridge</span><span>{ } jsonl</span>
+            </div>
+          </div>
+          <div class="messages" id="messages"></div>
+          <div class="typing-row hidden" id="typingRow">
+            <div class="typing-card"><span></span><span></span><span></span><em>Assistant bridge is reading…</em></div>
+          </div>
+        </section>
+
+        <section class="composer-shell" id="composerShell">
+          <div class="drop-overlay" id="dropOverlay"><b>DROP IMAGES</b><span>Release to attach to this turn</span></div>
+          <div class="attachment-strip hidden" id="attachmentStrip"></div>
+          <div class="slash-command-panel hidden" id="slashCommandPanel" role="listbox" aria-label="Slash commands">
+            <span class="slash-command-heading">COMMANDS</span>
+            <button type="button" data-command="/critical "><b>/critical</b><small>highest-priority queue</small></button>
+          </div>
+          <div class="composer">
+            <div class="composer-topline">
+              <span>PROMPT BUFFER</span>
+              <span id="composerMode">MARKDOWN</span>
+            </div>
+            <textarea id="composerInput" rows="1" spellcheck="true" placeholder="Message the local assistant…"></textarea>
+            <div class="composer-footer">
+              <div class="composer-tools">
+                <input id="fileInput" type="file" multiple hidden>
+                <button class="tool-button" id="attachButton" title="Attach files (Ctrl+U)">
+                  <svg viewBox="0 0 24 24"><path d="M8.5 12.5l5.7-5.7a3.3 3.3 0 014.7 4.7l-7.6 7.6a5.2 5.2 0 01-7.4-7.4l7.2-7.2"/></svg>
+                  <span>Attach</span>
+                </button>
+                <span class="divider"></span>
+                <span class="counter" id="counter">0 chars</span>
+              </div>
+              <button class="send-button" id="sendButton" disabled>
+                <span>Send</span>
+                <kbd>⌃ ⇧ ↵</kbd>
+                <svg viewBox="0 0 24 24"><path d="M5 12h13m-5-5l5 5-5 5"/></svg>
+              </button>
+            </div>
+          </div>
+          <div class="composer-hint">Images and files can be pasted or dragged in. Draft attachments are persisted before sending.</div>
+        </section>
+      </main>
+    </div>
+    <div class="toast-stack" id="toastStack"></div>
+
+    <div class="modal-backdrop hidden" id="exportModal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">
+      <section class="export-modal">
+        <header class="export-modal-header">
+          <div>
+            <div class="eyebrow">LOCAL DATA PIPELINE</div>
+            <h2 id="exportModalTitle">Export conversation</h2>
+          </div>
+          <button class="modal-close" id="exportCloseButton" aria-label="Close export window">CLOSE</button>
+        </header>
+
+        <div class="export-modal-body">
+          <div class="export-grid">
+            <section class="export-section">
+              <div class="export-label">MESSAGE ROLES</div>
+              <div class="segmented-control" id="exportRoleControl">
+                <label><input type="radio" name="exportRole" value="both" checked><span>Both</span></label>
+                <label><input type="radio" name="exportRole" value="user"><span>My messages</span></label>
+                <label><input type="radio" name="exportRole" value="assistant"><span>AI messages</span></label>
+              </div>
+            </section>
+
+            <section class="export-section">
+              <div class="export-label">OUTPUT FORMAT</div>
+              <select class="export-select" id="exportFormat">
+                <option value="markdown">Markdown (.md)</option>
+                <option value="text">Plain text (.txt)</option>
+                <option value="json">Raw JSON (.json)</option>
+              </select>
+            </section>
+          </div>
+
+          <section class="export-section">
+            <div class="export-label">SELECTION METHOD</div>
+            <div class="scope-tabs" id="exportScopeTabs">
+              <label><input type="radio" name="exportScope" value="all" checked><span>All</span></label>
+              <label><input type="radio" name="exportScope" value="datetime"><span>Date + time</span></label>
+              <label><input type="radio" name="exportScope" value="messages"><span>Latest messages</span></label>
+              <label><input type="radio" name="exportScope" value="tokens"><span>Approx tokens</span></label>
+            </div>
+
+            <div class="scope-options">
+              <div class="scope-option hidden" data-scope-panel="datetime">
+                <label class="export-field"><span>FROM</span><input id="exportFrom" type="datetime-local"></label>
+                <label class="export-field"><span>TO</span><input id="exportTo" type="datetime-local"></label>
+              </div>
+              <div class="scope-option hidden" data-scope-panel="messages">
+                <label class="export-field wide"><span>LATEST MESSAGE COUNT</span><input id="exportMessageLimit" type="number" min="1" step="1" value="20"></label>
+              </div>
+              <div class="scope-option hidden" data-scope-panel="tokens">
+                <label class="export-field wide"><span>APPROXIMATE TOKEN BUDGET</span><input id="exportTokenLimit" type="number" min="1" step="100" value="4000"></label>
+                <p class="export-note">Estimate uses raw serialized message characters divided by 4, rounded up. Newest messages are retained first.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="export-section compact">
+            <label class="toggle-row">
+              <input type="checkbox" id="exportTimestamps" checked>
+              <span class="toggle-box"></span>
+              <span><b>Keep timestamps</b><small>Include each message's local date and time in the exported output.</small></span>
+            </label>
+          </section>
+
+          <section class="export-preview">
+            <div><span>SELECTED</span><b id="exportSelectedCount">0 messages</b></div>
+            <div><span>RAW CHARS</span><b id="exportCharacterCount">0</b></div>
+            <div><span>APPROX TOKENS</span><b id="exportTokenEstimate">0</b></div>
+            <div><span>OUTPUT SIZE</span><b id="exportByteEstimate">0 B</b></div>
+          </section>
+        </div>
+
+        <footer class="export-modal-footer">
+          <span id="exportSelectionHint">All roles and all messages selected.</span>
+          <div>
+            <button class="modal-secondary" id="exportCancelButton">Cancel</button>
+            <button class="modal-primary" id="exportSaveButton">Choose save location</button>
+          </div>
+        </footer>
+      </section>
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
